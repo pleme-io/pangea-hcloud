@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require_relative '../core'
+require 'pangea/resources/types/core'
 
 module Pangea
   module Resources
@@ -76,8 +76,10 @@ module Pangea
       # Hetzner network subnet type
       HetznerSubnetType = String.enum('cloud', 'server', 'vswitch')
 
-      # Hetzner common labels (like tags)
-      HetznerLabels = Hash.map(String, String).default({}.freeze)
+      # Hetzner common labels (like tags) - coerces symbol keys to strings
+      HetznerLabels = Hash.constructor { |value|
+        value.is_a?(::Hash) ? value.transform_keys(&:to_s) : value
+      }.default({}.freeze)
 
       # Hetzner firewall rule
       HetznerFirewallRule = Hash.schema(

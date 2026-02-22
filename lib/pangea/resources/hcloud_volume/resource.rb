@@ -18,7 +18,8 @@ module Pangea
           size volume_attrs.size
           location volume_attrs.location if volume_attrs.location
           server_id volume_attrs.server_id if volume_attrs.server_id
-          format volume_attrs.format if volume_attrs.format
+          # format is a Kernel method (sprintf), must call method_missing directly
+          method_missing(:format, volume_attrs.format) if volume_attrs.format
 
           if volume_attrs.labels.any?
             labels do

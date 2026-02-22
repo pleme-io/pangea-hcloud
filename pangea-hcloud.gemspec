@@ -14,13 +14,13 @@ Gem::Specification.new do |spec|
   spec.homepage              = %(https://github.com/pleme-io/pangea-hcloud)
   spec.license               = %(Apache-2.0)
   spec.require_paths         = [%(lib)]
-  spec.required_ruby_version = %(>=3.3.0)
+  spec.required_ruby_version = %(>=3.4.0)
 
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
     f.match(%r{^(test|spec|features)/})
   end
 
-  spec.add_dependency "pangea", ">= 0.1.0"
+  spec.add_dependency "pangea-core", "~> 0.1.0"
   spec.add_dependency "terraform-synthesizer", "~> 0.0.28"
   spec.add_dependency "dry-types", "~> 1.7"
   spec.add_dependency "dry-struct", "~> 1.6"
