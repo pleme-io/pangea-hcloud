@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 # Copyright 2025 The Pangea Authors
 
-require 'dry-struct'
 require 'pangea/resources/types'
 
 module Pangea
@@ -9,8 +8,7 @@ module Pangea
     module Hetzner
       module Types
         # Hetzner Server Network attachment attributes
-        class ServerNetworkAttributes < Dry::Struct
-          transform_keys(&:to_sym)
+        class ServerNetworkAttributes < Pangea::Resources::BaseAttributes
 
           # Required attributes
           attribute :server_id, Resources::Types::String

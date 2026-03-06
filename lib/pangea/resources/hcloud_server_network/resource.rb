@@ -6,38 +6,20 @@ require 'pangea/resources/reference'
 require 'pangea/resources/hcloud_server_network/types'
 require 'pangea/resource_registry'
 
-module Pangea
-  module Resources
-    module HcloudServerNetwork
-      # Attach a Hetzner Cloud Server to a Network
-      def hcloud_server_network(name, attributes = {})
-        sn_attrs = Hetzner::Types::ServerNetworkAttributes.new(attributes)
+module Pangea::Resources
+  module HcloudServerNetwork
+    include Pangea::Resources::ResourceBuilder
 
-        resource(:hcloud_server_network, name) do
-          server_id sn_attrs.server_id
-          network_id sn_attrs.network_id
-          ip sn_attrs.ip if sn_attrs.ip
-          alias_ips sn_attrs.alias_ips if sn_attrs.alias_ips.any?
-        end
-
-        ResourceReference.new(
-          type: 'hcloud_server_network',
-          name: name,
-          resource_attributes: sn_attrs.to_h,
-          outputs: {
-            id: "${hcloud_server_network.#{name}.id}",
-            server_id: "${hcloud_server_network.#{name}.server_id}",
-            network_id: "${hcloud_server_network.#{name}.network_id}",
-            ip: "${hcloud_server_network.#{name}.ip}"
-          }
-        )
+    define_resource :hcloud_server_network,
+      attributes_class: Hetzner::Types::ServerNetworkAttributes,
+      outputs: { id: :id, server_id: :server_id, network_id: :network_id, ip: :ip },
+      map: [:server_id, :network_id],
+      map_present: [:ip] do |r, attrs|
+        r.alias_ips attrs.alias_ips if attrs.alias_ips.any?
       end
-    end
-
-    module Hetzner
-      include HcloudServerNetwork
-    end
+  end
+  module Hetzner
+    include HcloudServerNetwork
   end
 end
-
 Pangea::ResourceRegistry.register_module(Pangea::Resources::Hetzner)

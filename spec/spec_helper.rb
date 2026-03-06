@@ -29,19 +29,4 @@ end
 
 Dir[File.join(__dir__, 'support', '**', '*.rb')].each { |f| require f }
 
-RSpec.configure do |config|
-  config.example_status_persistence_file_path = ".rspec_status"
-  config.disable_monkey_patching!
-  config.expect_with :rspec do |c|
-    c.syntax = :expect
-  end
-  config.include SynthesisTestHelpers if defined?(SynthesisTestHelpers)
-  config.before(:suite) { ENV['PANGEA_ENV'] = 'test' }
-  config.formatter = :progress
-  config.color = true
-  config.filter_run_when_matching :focus
-  config.run_all_when_everything_filtered = true
-  config.order = :random
-  Kernel.srand config.seed
-  config.warnings = false
-end
+Pangea::Testing::SpecSetup.configure!

@@ -6,37 +6,17 @@ require 'pangea/resources/reference'
 require 'pangea/resources/hcloud_network_route/types'
 require 'pangea/resource_registry'
 
-module Pangea
-  module Resources
-    module HcloudNetworkRoute
-      # Create a custom network route
-      def hcloud_network_route(name, attributes = {})
-        route_attrs = Hetzner::Types::NetworkRouteAttributes.new(attributes)
+module Pangea::Resources
+  module HcloudNetworkRoute
+    include Pangea::Resources::ResourceBuilder
 
-        resource(:hcloud_network_route, name) do
-          network_id route_attrs.network_id
-          destination route_attrs.destination
-          gateway route_attrs.gateway
-        end
-
-        ResourceReference.new(
-          type: 'hcloud_network_route',
-          name: name,
-          resource_attributes: route_attrs.to_h,
-          outputs: {
-            id: "${hcloud_network_route.#{name}.id}",
-            network_id: "${hcloud_network_route.#{name}.network_id}",
-            destination: "${hcloud_network_route.#{name}.destination}",
-            gateway: "${hcloud_network_route.#{name}.gateway}"
-          }
-        )
-      end
-    end
-
-    module Hetzner
-      include HcloudNetworkRoute
-    end
+    define_resource :hcloud_network_route,
+      attributes_class: Hetzner::Types::NetworkRouteAttributes,
+      outputs: { id: :id, network_id: :network_id, destination: :destination, gateway: :gateway },
+      map: [:network_id, :destination, :gateway]
+  end
+  module Hetzner
+    include HcloudNetworkRoute
   end
 end
-
 Pangea::ResourceRegistry.register_module(Pangea::Resources::Hetzner)

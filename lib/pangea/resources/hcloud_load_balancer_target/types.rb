@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 # Copyright 2025 The Pangea Authors
 
-require 'dry-struct'
 require 'pangea/resources/types'
 
 module Pangea
@@ -9,8 +8,7 @@ module Pangea
     module Hetzner
       module Types
         # Hetzner Load Balancer Target attributes
-        class LoadBalancerTargetAttributes < Dry::Struct
-          transform_keys(&:to_sym)
+        class LoadBalancerTargetAttributes < Pangea::Resources::BaseAttributes
 
           # Required attributes
           attribute :load_balancer_id, Resources::Types::String

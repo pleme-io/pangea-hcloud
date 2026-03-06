@@ -6,43 +6,23 @@ require 'pangea/resources/reference'
 require 'pangea/resources/hcloud_placement_group/types'
 require 'pangea/resource_registry'
 
-module Pangea
-  module Resources
-    module HcloudPlacementGroup
-      # Create Placement Group
-      def hcloud_placement_group(name, attributes = {})
-        pg_attrs = Hetzner::Types::PlacementGroupAttributes.new(attributes)
+module Pangea::Resources
+  module HcloudPlacementGroup
+    include Pangea::Resources::ResourceBuilder
 
-        resource(:hcloud_placement_group, name) do
-          name pg_attrs.name
-          type pg_attrs.type
-
-          if pg_attrs.labels.any?
-            labels do
-              pg_attrs.labels.each do |key, value|
-                public_send(key, value)
-              end
-            end
+    define_resource :hcloud_placement_group,
+      attributes_class: Hetzner::Types::PlacementGroupAttributes,
+      outputs: { id: :id, name: :name, type: :type },
+      map: [:name, :type] do |r, attrs|
+        if attrs.labels.any?
+          r.labels do
+            attrs.labels.each { |k, v| public_send(k, v) }
           end
         end
-
-        ResourceReference.new(
-          type: 'hcloud_placement_group',
-          name: name,
-          resource_attributes: pg_attrs.to_h,
-          outputs: {
-            id: "${hcloud_placement_group.#{name}.id}",
-            name: "${hcloud_placement_group.#{name}.name}",
-            type: "${hcloud_placement_group.#{name}.type}"
-          }
-        )
       end
-    end
-
-    module Hetzner
-      include HcloudPlacementGroup
-    end
+  end
+  module Hetzner
+    include HcloudPlacementGroup
   end
 end
-
 Pangea::ResourceRegistry.register_module(Pangea::Resources::Hetzner)

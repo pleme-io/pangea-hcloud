@@ -6,49 +6,27 @@ require 'pangea/resources/reference'
 require 'pangea/resources/hcloud_volume/types'
 require 'pangea/resource_registry'
 
-module Pangea
-  module Resources
-    module HcloudVolume
-      # Create a Hetzner Cloud Volume
-      def hcloud_volume(name, attributes = {})
-        volume_attrs = Hetzner::Types::VolumeAttributes.new(attributes)
+module Pangea::Resources
+  module HcloudVolume
+    include Pangea::Resources::ResourceBuilder
 
-        resource(:hcloud_volume, name) do
-          name volume_attrs.name
-          size volume_attrs.size
-          location volume_attrs.location if volume_attrs.location
-          server_id volume_attrs.server_id if volume_attrs.server_id
-          # format is a Kernel method (sprintf), must call method_missing directly
-          method_missing(:format, volume_attrs.format) if volume_attrs.format
+    define_resource :hcloud_volume,
+      attributes_class: Hetzner::Types::VolumeAttributes,
+      outputs: { id: :id, name: :name, size: :size, linux_device: :linux_device, location: :location },
+      map: [:name, :size],
+      map_present: [:location, :server_id] do |r, attrs|
+        # format is a Kernel method — must call method_missing directly to bypass
+        method_missing(:format, attrs.format) if attrs.format
 
-          if volume_attrs.labels.any?
-            labels do
-              volume_attrs.labels.each do |key, value|
-                public_send(key, value)
-              end
-            end
+        if attrs.labels.any?
+          r.labels do
+            attrs.labels.each { |k, v| public_send(k, v) }
           end
         end
-
-        ResourceReference.new(
-          type: 'hcloud_volume',
-          name: name,
-          resource_attributes: volume_attrs.to_h,
-          outputs: {
-            id: "${hcloud_volume.#{name}.id}",
-            name: "${hcloud_volume.#{name}.name}",
-            size: "${hcloud_volume.#{name}.size}",
-            linux_device: "${hcloud_volume.#{name}.linux_device}",
-            location: "${hcloud_volume.#{name}.location}"
-          }
-        )
       end
-    end
-
-    module Hetzner
-      include HcloudVolume
-    end
+  end
+  module Hetzner
+    include HcloudVolume
   end
 end
-
 Pangea::ResourceRegistry.register_module(Pangea::Resources::Hetzner)

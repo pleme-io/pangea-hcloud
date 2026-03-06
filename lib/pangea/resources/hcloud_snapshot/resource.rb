@@ -6,36 +6,20 @@ require 'pangea/resources/reference'
 require 'pangea/resources/hcloud_snapshot/types'
 require 'pangea/resource_registry'
 
-module Pangea
-  module Resources
-    module HcloudSnapshot
-      # Create a snapshot from a Hetzner Cloud server
-      def hcloud_snapshot(name, attributes = {})
-        snapshot_attrs = Hetzner::Types::SnapshotAttributes.new(attributes)
+module Pangea::Resources
+  module HcloudSnapshot
+    include Pangea::Resources::ResourceBuilder
 
-        resource(:hcloud_snapshot, name) do
-          server_id snapshot_attrs.server_id
-          description snapshot_attrs.description if snapshot_attrs.description
-          labels snapshot_attrs.labels
-        end
-
-        ResourceReference.new(
-          type: 'hcloud_snapshot',
-          name: name,
-          resource_attributes: snapshot_attrs.to_h,
-          outputs: {
-            id: "${hcloud_snapshot.#{name}.id}",
-            image_id: "${hcloud_snapshot.#{name}.id}",
-            description: "${hcloud_snapshot.#{name}.description}"
-          }
-        )
-      end
-    end
-
-    module Hetzner
-      include HcloudSnapshot
-    end
+    # labels set unconditionally (no .any? guard in original code)
+    # image_id output maps to :id terraform attribute
+    define_resource :hcloud_snapshot,
+      attributes_class: Hetzner::Types::SnapshotAttributes,
+      outputs: { id: :id, image_id: :id, description: :description },
+      map: [:server_id, :labels],
+      map_present: [:description]
+  end
+  module Hetzner
+    include HcloudSnapshot
   end
 end
-
 Pangea::ResourceRegistry.register_module(Pangea::Resources::Hetzner)

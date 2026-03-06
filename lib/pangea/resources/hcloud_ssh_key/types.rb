@@ -14,7 +14,6 @@
 # limitations under the License.
 
 
-require 'dry-struct'
 require 'pangea/resources/types'
 
 module Pangea
@@ -22,8 +21,7 @@ module Pangea
     module Hetzner
       module Types
         # Hetzner SSH Key resource attributes with validation
-        class SshKeyAttributes < Dry::Struct
-          transform_keys(&:to_sym)
+        class SshKeyAttributes < Pangea::Resources::BaseAttributes
 
           # Required attributes
           attribute :name, Resources::Types::String

@@ -1,18 +1,5 @@
 # frozen_string_literal: true
 # Copyright 2025 The Pangea Authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 
 require 'spec_helper'
 require 'terraform-synthesizer'
@@ -60,6 +47,21 @@ RSpec.describe 'hcloud_ssh_key synthesis' do
       expect(ssh_key[:labels][:environment]).to eq("production")
       expect(ssh_key[:labels][:managed_by]).to eq("pangea")
     end
+
+    it 'synthesizes ssh key with RSA public key' do
+      synthesizer.instance_eval do
+        extend Pangea::Resources::Hetzner
+        hcloud_ssh_key(:rsa_key, {
+          name: "rsa-key",
+          public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC... user@host"
+        })
+      end
+
+      result = synthesizer.synthesis
+      ssh_key = result[:resource][:hcloud_ssh_key][:rsa_key]
+
+      expect(ssh_key[:public_key]).to include("ssh-rsa")
+    end
   end
 
   describe 'resource references' do
@@ -75,6 +77,43 @@ RSpec.describe 'hcloud_ssh_key synthesis' do
       expect(ref.id).to eq("${hcloud_ssh_key.test.id}")
       expect(ref.outputs[:fingerprint]).to eq("${hcloud_ssh_key.test.fingerprint}")
       expect(ref.outputs[:name]).to eq("${hcloud_ssh_key.test.name}")
+    end
+
+    it 'includes all expected output references' do
+      ref = synthesizer.instance_eval do
+        extend Pangea::Resources::Hetzner
+        hcloud_ssh_key(:full, {
+          name: "full-key",
+          public_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAITest test@example.com"
+        })
+      end
+
+      expect(ref.outputs).to include(:id, :name, :fingerprint, :public_key)
+    end
+  end
+
+  describe 'type validation' do
+    it 'rejects missing required name' do
+      expect {
+        Pangea::Resources::Hetzner::Types::SshKeyAttributes.new(
+          public_key: "ssh-ed25519 AAAA..."
+        )
+      }.to raise_error(Dry::Struct::Error)
+    end
+
+    it 'rejects missing required public_key' do
+      expect {
+        Pangea::Resources::Hetzner::Types::SshKeyAttributes.new(
+          name: "test-key"
+        )
+      }.to raise_error(Dry::Struct::Error)
+    end
+
+    it 'defaults labels to empty hash' do
+      attrs = Pangea::Resources::Hetzner::Types::SshKeyAttributes.new(
+        name: "test", public_key: "ssh-ed25519 AAAA..."
+      )
+      expect(attrs.labels).to eq({})
     end
   end
 end

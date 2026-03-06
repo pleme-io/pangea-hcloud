@@ -6,35 +6,19 @@ require 'pangea/resources/reference'
 require 'pangea/resources/hcloud_firewall_attachment/types'
 require 'pangea/resource_registry'
 
-module Pangea
-  module Resources
-    module HcloudFirewallAttachment
-      # Attach Firewall to Servers
-      def hcloud_firewall_attachment(name, attributes = {})
-        fa_attrs = Hetzner::Types::FirewallAttachmentAttributes.new(attributes)
+module Pangea::Resources
+  module HcloudFirewallAttachment
+    include Pangea::Resources::ResourceBuilder
 
-        resource(:hcloud_firewall_attachment, name) do
-          firewall_id fa_attrs.firewall_id
-          server_ids fa_attrs.server_ids if fa_attrs.server_ids.any?
-        end
-
-        ResourceReference.new(
-          type: 'hcloud_firewall_attachment',
-          name: name,
-          resource_attributes: fa_attrs.to_h,
-          outputs: {
-            id: "${hcloud_firewall_attachment.#{name}.id}",
-            firewall_id: "${hcloud_firewall_attachment.#{name}.firewall_id}",
-            server_ids: "${hcloud_firewall_attachment.#{name}.server_ids}"
-          }
-        )
+    define_resource :hcloud_firewall_attachment,
+      attributes_class: Hetzner::Types::FirewallAttachmentAttributes,
+      outputs: { id: :id, firewall_id: :firewall_id, server_ids: :server_ids },
+      map: [:firewall_id] do |r, attrs|
+        r.server_ids attrs.server_ids if attrs.server_ids.any?
       end
-    end
-
-    module Hetzner
-      include HcloudFirewallAttachment
-    end
+  end
+  module Hetzner
+    include HcloudFirewallAttachment
   end
 end
-
 Pangea::ResourceRegistry.register_module(Pangea::Resources::Hetzner)
