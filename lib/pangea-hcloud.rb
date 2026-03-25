@@ -4,6 +4,8 @@
 require 'pangea-core'
 require 'terraform-synthesizer'
 
+module Pangea; module Resources; module Hcloud; module Types; end; end; end; end
+
 # Hcloud resources
 require_relative 'pangea/resources/hcloud_certificate/resource'
 require_relative 'pangea/resources/hcloud_firewall/resource'
