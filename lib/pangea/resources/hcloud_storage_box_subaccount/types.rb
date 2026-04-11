@@ -12,6 +12,6 @@ module Pangea::Resources::Hcloud::Types
 
     attribute :home_directory, T::String
     attribute :password, T::String
-    attribute :storage_box_id, T::Float
+    attribute :storage_box_id, T::String
   end
 end

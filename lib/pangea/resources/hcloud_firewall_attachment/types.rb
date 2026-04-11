@@ -10,8 +10,8 @@ module Pangea::Resources::Hcloud::Types
     transform_keys(&:to_sym)
     T = Pangea::Resources::Hcloud::Types
 
-    attribute :firewall_id, T::Float
+    attribute :firewall_id, T::String
     attribute? :label_selectors, T::Array.of(T::String).optional
-    attribute? :server_ids, T::Array.of(T::Float).optional
+    attribute? :server_ids, T::Array.of(T::String).optional
   end
 end

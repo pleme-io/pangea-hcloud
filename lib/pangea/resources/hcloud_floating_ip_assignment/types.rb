@@ -10,7 +10,7 @@ module Pangea::Resources::Hcloud::Types
     transform_keys(&:to_sym)
     T = Pangea::Resources::Hcloud::Types
 
-    attribute :floating_ip_id, T::Float
-    attribute :server_id, T::Float
+    attribute :floating_ip_id, T::String
+    attribute :server_id, T::String
   end
 end

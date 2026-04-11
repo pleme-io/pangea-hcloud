@@ -12,6 +12,6 @@ module Pangea::Resources::Hcloud::Types
 
     attribute :destination, T::String
     attribute :gateway, T::String
-    attribute :network_id, T::Float
+    attribute :network_id, T::String
   end
 end

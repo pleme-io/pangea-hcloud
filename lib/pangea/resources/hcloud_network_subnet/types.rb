@@ -11,9 +11,9 @@ module Pangea::Resources::Hcloud::Types
     T = Pangea::Resources::Hcloud::Types
 
     attribute :ip_range, T::String
-    attribute :network_id, T::Float
+    attribute :network_id, T::String
     attribute :network_zone, T::String
     attribute :type, T::String
-    attribute? :vswitch_id, T::Float.optional
+    attribute? :vswitch_id, T::String.optional
   end
 end

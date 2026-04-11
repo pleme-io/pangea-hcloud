@@ -21,7 +21,7 @@ module Pangea::Resources::Hcloud::Types
     attribute? :keep_disk, T::Bool.optional
     attribute? :labels, T::Hash.optional
     attribute? :network, T::Array.of(T::Hash).optional
-    attribute? :placement_group_id, T::Float.optional
+    attribute? :placement_group_id, T::String.optional
     attribute? :public_net, T::Array.of(T::Hash).optional
     attribute? :rebuild_protection, T::Bool.optional
     attribute? :rescue, T::String.optional

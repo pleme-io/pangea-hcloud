@@ -10,6 +10,6 @@ module Pangea::Resources::Hcloud::Types
     transform_keys(&:to_sym)
     T = Pangea::Resources::Hcloud::Types
 
-    attribute :storage_box_id, T::Float
+    attribute :storage_box_id, T::String
   end
 end

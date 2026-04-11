@@ -12,9 +12,9 @@ module Pangea::Resources::Hcloud::Types
 
     attribute :dns_ptr, T::String
     attribute :ip_address, T::String
-    attribute? :floating_ip_id, T::Float.optional
-    attribute? :load_balancer_id, T::Float.optional
-    attribute? :primary_ip_id, T::Float.optional
-    attribute? :server_id, T::Float.optional
+    attribute? :floating_ip_id, T::String.optional
+    attribute? :load_balancer_id, T::String.optional
+    attribute? :primary_ip_id, T::String.optional
+    attribute? :server_id, T::String.optional
   end
 end
