@@ -55,7 +55,7 @@ RSpec.describe Pangea::Resources::HcloudFirewall do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ apply_to: [{ 'key1' => 'val1' }], rule: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ apply_to: [{ 'key1' => 'val1' }], labels: { 'key1' => 'val1' }, rule: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -65,6 +65,7 @@ RSpec.describe Pangea::Resources::HcloudFirewall do
 
         config = validate_resource_structure(result, 'hcloud_firewall', 'full')
         expect(config).to have_key('apply_to')
+        expect(config).to have_key('labels')
         expect(config).to have_key('rule')
       end
     end
@@ -86,6 +87,23 @@ RSpec.describe Pangea::Resources::HcloudFirewall do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_firewall', 'minimal')
         expect(config).not_to have_key('apply_to')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_firewall('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_firewall', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_firewall('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_firewall', 'minimal')
+        expect(config).not_to have_key('labels')
       end
       it 'includes rule when provided' do
         synth = create_synthesizer

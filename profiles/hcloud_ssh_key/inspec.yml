@@ -1,0 +1,8 @@
+name: hcloud_ssh_key
+title: Manages a hcloud_ssh_key resource
+version: 0.1.0
+supports:
+  - platform: hcloud
+depends:
+  - name: inspec-hcloud
+    url: https://github.com/pleme-io/inspec-hcloud

@@ -67,7 +67,7 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancer do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ algorithm: [{ 'key1' => 'val1' }], delete_protection: true, target: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ algorithm: { 'key1' => 'val1' }, delete_protection: true, labels: { 'key1' => 'val1' }, location: 'test-value', network_zone: 'test-value', target: [{ 'key1' => 'val1' }] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -78,6 +78,9 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancer do
         config = validate_resource_structure(result, 'hcloud_load_balancer', 'full')
         expect(config).to have_key('algorithm')
         expect(config).to have_key('delete_protection')
+        expect(config).to have_key('labels')
+        expect(config).to have_key('location')
+        expect(config).to have_key('network_zone')
         expect(config).to have_key('target')
       end
     end
@@ -86,7 +89,7 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancer do
       it 'includes algorithm when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.hcloud_load_balancer('opt', required_attrs.merge(algorithm: [{ 'key1' => 'val1' }]))
+        synth.hcloud_load_balancer('opt', required_attrs.merge(algorithm: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_load_balancer', 'opt')
         expect(config).to have_key('algorithm')
@@ -116,6 +119,57 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancer do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_load_balancer', 'minimal')
         expect(config).not_to have_key('delete_protection')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer', 'minimal')
+        expect(config).not_to have_key('location')
+      end
+      it 'includes network_zone when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer('opt', required_attrs.merge(network_zone: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer', 'opt')
+        expect(config).to have_key('network_zone')
+      end
+
+      it 'omits network_zone when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer', 'minimal')
+        expect(config).not_to have_key('network_zone')
       end
       it 'includes target when provided' do
         synth = create_synthesizer

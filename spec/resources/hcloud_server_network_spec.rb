@@ -61,7 +61,7 @@ RSpec.describe Pangea::Resources::HcloudServerNetwork do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ subnet_id: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ alias_ips: ['test-value'], ip: 'test-value', network_id: 3.14, subnet_id: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -70,11 +70,65 @@ RSpec.describe Pangea::Resources::HcloudServerNetwork do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'hcloud_server_network', 'full')
+        expect(config).to have_key('alias_ips')
+        expect(config).to have_key('ip')
+        expect(config).to have_key('network_id')
         expect(config).to have_key('subnet_id')
       end
     end
 
     context 'optional attributes' do
+      it 'includes alias_ips when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server_network('opt', required_attrs.merge(alias_ips: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server_network', 'opt')
+        expect(config).to have_key('alias_ips')
+      end
+
+      it 'omits alias_ips when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server_network', 'minimal')
+        expect(config).not_to have_key('alias_ips')
+      end
+      it 'includes ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server_network('opt', required_attrs.merge(ip: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server_network', 'opt')
+        expect(config).to have_key('ip')
+      end
+
+      it 'omits ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server_network', 'minimal')
+        expect(config).not_to have_key('ip')
+      end
+      it 'includes network_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server_network('opt', required_attrs.merge(network_id: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server_network', 'opt')
+        expect(config).to have_key('network_id')
+      end
+
+      it 'omits network_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server_network', 'minimal')
+        expect(config).not_to have_key('network_id')
+      end
       it 'includes subnet_id when provided' do
         synth = create_synthesizer
         synth.extend(described_class)

@@ -59,7 +59,7 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerService do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ health_check: [{ 'key1' => 'val1' }], http: [{ 'key1' => 'val1' }] }) }
+      let(:all_attrs) { required_attrs.merge({ destination_port: 3.14, health_check: { 'key1' => 'val1' }, http: { 'key1' => 'val1' }, listen_port: 3.14, proxyprotocol: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,16 +68,36 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerService do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'full')
+        expect(config).to have_key('destination_port')
         expect(config).to have_key('health_check')
         expect(config).to have_key('http')
+        expect(config).to have_key('listen_port')
+        expect(config).to have_key('proxyprotocol')
       end
     end
 
     context 'optional attributes' do
+      it 'includes destination_port when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_service('opt', required_attrs.merge(destination_port: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'opt')
+        expect(config).to have_key('destination_port')
+      end
+
+      it 'omits destination_port when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'minimal')
+        expect(config).not_to have_key('destination_port')
+      end
       it 'includes health_check when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.hcloud_load_balancer_service('opt', required_attrs.merge(health_check: [{ 'key1' => 'val1' }]))
+        synth.hcloud_load_balancer_service('opt', required_attrs.merge(health_check: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'opt')
         expect(config).to have_key('health_check')
@@ -94,7 +114,7 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerService do
       it 'includes http when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
-        synth.hcloud_load_balancer_service('opt', required_attrs.merge(http: [{ 'key1' => 'val1' }]))
+        synth.hcloud_load_balancer_service('opt', required_attrs.merge(http: { 'key1' => 'val1' }))
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'opt')
         expect(config).to have_key('http')
@@ -107,6 +127,54 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerService do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'minimal')
         expect(config).not_to have_key('http')
+      end
+      it 'includes listen_port when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_service('opt', required_attrs.merge(listen_port: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'opt')
+        expect(config).to have_key('listen_port')
+      end
+
+      it 'omits listen_port when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'minimal')
+        expect(config).not_to have_key('listen_port')
+      end
+      it 'includes proxyprotocol when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_service('opt', required_attrs.merge(proxyprotocol: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'opt')
+        expect(config).to have_key('proxyprotocol')
+      end
+
+      it 'omits proxyprotocol when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_service('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_service', 'minimal')
+        expect(config).not_to have_key('proxyprotocol')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts proxyprotocol=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(proxyprotocol: val)
+          synth.hcloud_load_balancer_service("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'hcloud_load_balancer_service', "bool_#{val}")
+          expect(config['proxyprotocol']).to eq(val)
+        end
       end
     end
 
@@ -156,5 +224,5 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerService do
     expected_outputs: [:id, :destination_port, :listen_port, :proxyprotocol],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:proxyprotocol]
 end

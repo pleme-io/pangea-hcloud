@@ -64,6 +64,108 @@ RSpec.describe Pangea::Resources::HcloudZone do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ delete_protection: true, labels: { 'key1' => 'val1' }, primary_nameservers: [{ 'key1' => 'val1' }], ttl: 3.14 }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'hcloud_zone', 'full')
+        expect(config).to have_key('delete_protection')
+        expect(config).to have_key('labels')
+        expect(config).to have_key('primary_nameservers')
+        expect(config).to have_key('ttl')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes delete_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('opt', required_attrs.merge(delete_protection: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'opt')
+        expect(config).to have_key('delete_protection')
+      end
+
+      it 'omits delete_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'minimal')
+        expect(config).not_to have_key('delete_protection')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
+      it 'includes primary_nameservers when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('opt', required_attrs.merge(primary_nameservers: [{ 'key1' => 'val1' }]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'opt')
+        expect(config).to have_key('primary_nameservers')
+      end
+
+      it 'omits primary_nameservers when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'minimal')
+        expect(config).not_to have_key('primary_nameservers')
+      end
+      it 'includes ttl when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('opt', required_attrs.merge(ttl: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'opt')
+        expect(config).to have_key('ttl')
+      end
+
+      it 'omits ttl when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone', 'minimal')
+        expect(config).not_to have_key('ttl')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts delete_protection=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(delete_protection: val)
+          synth.hcloud_zone("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'hcloud_zone', "bool_#{val}")
+          expect(config['delete_protection']).to eq(val)
+        end
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -110,5 +212,5 @@ RSpec.describe Pangea::Resources::HcloudZone do
     expected_outputs: [:id, :authoritative_nameservers, :delete_protection, :labels, :primary_nameservers, :registrar, :ttl],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:delete_protection]
 end

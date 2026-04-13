@@ -13,7 +13,9 @@ module Pangea::Resources
     define_resource :hcloud_zone,
       attributes_class: Hcloud::Types::ZoneAttributes,
       outputs: { id: :id },
-      map: [:mode, :name]
+      map: [:mode, :name],
+      map_present: [:labels, :primary_nameservers, :ttl],
+      map_bool: [:delete_protection]
   end
   module Hcloud
     include HcloudZone

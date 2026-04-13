@@ -13,7 +13,8 @@ module Pangea::Resources
     define_resource :hcloud_ssh_key,
       attributes_class: Hcloud::Types::SshKeyAttributes,
       outputs: { id: :id },
-      map: [:name, :public_key]
+      map: [:name, :public_key],
+      map_present: [:labels]
   end
   module Hcloud
     include HcloudSshKey

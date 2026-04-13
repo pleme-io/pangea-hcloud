@@ -14,7 +14,7 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::ServerAttributes,
       outputs: { id: :id },
       map: [:name, :server_type],
-      map_present: [:image, :iso, :labels, :network, :placement_group_id, :public_net, :rescue, :ssh_keys, :user_data],
+      map_present: [:datacenter, :firewall_ids, :image, :iso, :labels, :location, :network, :placement_group_id, :public_net, :rescue, :ssh_keys, :user_data],
       map_bool: [:allow_deprecated_images, :backups, :delete_protection, :ignore_remote_firewall_ids, :keep_disk, :rebuild_protection, :shutdown_before_deletion]
   end
   module Hcloud

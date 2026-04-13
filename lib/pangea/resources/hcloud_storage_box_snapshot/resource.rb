@@ -13,7 +13,8 @@ module Pangea::Resources
     define_resource :hcloud_storage_box_snapshot,
       attributes_class: Hcloud::Types::StorageBoxSnapshotAttributes,
       outputs: { id: :id },
-      map: [:storage_box_id]
+      map: [:storage_box_id],
+      map_present: [:description, :labels]
   end
   module Hcloud
     include HcloudStorageBoxSnapshot

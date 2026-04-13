@@ -14,7 +14,7 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::ServerNetworkAttributes,
       outputs: { id: :id },
       map: [:server_id],
-      map_present: [:subnet_id]
+      map_present: [:alias_ips, :ip, :network_id, :subnet_id]
   end
   module Hcloud
     include HcloudServerNetwork

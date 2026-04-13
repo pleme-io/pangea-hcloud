@@ -71,7 +71,7 @@ RSpec.describe Pangea::Resources::HcloudServer do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ allow_deprecated_images: true, backups: true, delete_protection: true, ignore_remote_firewall_ids: true, image: 'test-value', iso: 'test-value', keep_disk: true, labels: { 'key1' => 'val1' }, network: [{ 'key1' => 'val1' }], placement_group_id: 3.14, public_net: [{ 'key1' => 'val1' }], rebuild_protection: true, rescue: 'test-value', shutdown_before_deletion: true, ssh_keys: ['test-value'], user_data: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ allow_deprecated_images: true, backups: true, datacenter: 'test-value', delete_protection: true, firewall_ids: [3.14], ignore_remote_firewall_ids: true, image: 'test-value', iso: 'test-value', keep_disk: true, labels: { 'key1' => 'val1' }, location: 'test-value', network: [{ 'key1' => 'val1' }], placement_group_id: 3.14, public_net: [{ 'key1' => 'val1' }], rebuild_protection: true, rescue: 'test-value', shutdown_before_deletion: true, ssh_keys: ['test-value'], user_data: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -82,12 +82,15 @@ RSpec.describe Pangea::Resources::HcloudServer do
         config = validate_resource_structure(result, 'hcloud_server', 'full')
         expect(config).to have_key('allow_deprecated_images')
         expect(config).to have_key('backups')
+        expect(config).to have_key('datacenter')
         expect(config).to have_key('delete_protection')
+        expect(config).to have_key('firewall_ids')
         expect(config).to have_key('ignore_remote_firewall_ids')
         expect(config).to have_key('image')
         expect(config).to have_key('iso')
         expect(config).to have_key('keep_disk')
         expect(config).to have_key('labels')
+        expect(config).to have_key('location')
         expect(config).to have_key('network')
         expect(config).to have_key('placement_group_id')
         expect(config).to have_key('public_net')
@@ -134,6 +137,23 @@ RSpec.describe Pangea::Resources::HcloudServer do
         config = validate_resource_structure(result, 'hcloud_server', 'minimal')
         expect(config).not_to have_key('backups')
       end
+      it 'includes datacenter when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server('opt', required_attrs.merge(datacenter: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server', 'opt')
+        expect(config).to have_key('datacenter')
+      end
+
+      it 'omits datacenter when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server', 'minimal')
+        expect(config).not_to have_key('datacenter')
+      end
       it 'includes delete_protection when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -150,6 +170,23 @@ RSpec.describe Pangea::Resources::HcloudServer do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_server', 'minimal')
         expect(config).not_to have_key('delete_protection')
+      end
+      it 'includes firewall_ids when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server('opt', required_attrs.merge(firewall_ids: [3.14]))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server', 'opt')
+        expect(config).to have_key('firewall_ids')
+      end
+
+      it 'omits firewall_ids when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server', 'minimal')
+        expect(config).not_to have_key('firewall_ids')
       end
       it 'includes ignore_remote_firewall_ids when provided' do
         synth = create_synthesizer
@@ -235,6 +272,23 @@ RSpec.describe Pangea::Resources::HcloudServer do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_server', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_server('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_server', 'minimal')
+        expect(config).not_to have_key('location')
       end
       it 'includes network when provided' do
         synth = create_synthesizer

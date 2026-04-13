@@ -54,6 +54,40 @@ RSpec.describe Pangea::Resources::HcloudZoneRecord do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ comment: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone_record('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'hcloud_zone_record', 'full')
+        expect(config).to have_key('comment')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes comment when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone_record('opt', required_attrs.merge(comment: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone_record', 'opt')
+        expect(config).to have_key('comment')
+      end
+
+      it 'omits comment when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone_record('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone_record', 'minimal')
+        expect(config).not_to have_key('comment')
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer

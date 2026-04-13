@@ -54,6 +54,54 @@ RSpec.describe Pangea::Resources::HcloudVolumeAttachment do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ automount: true }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_volume_attachment('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'hcloud_volume_attachment', 'full')
+        expect(config).to have_key('automount')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes automount when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_volume_attachment('opt', required_attrs.merge(automount: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_volume_attachment', 'opt')
+        expect(config).to have_key('automount')
+      end
+
+      it 'omits automount when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_volume_attachment('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_volume_attachment', 'minimal')
+        expect(config).not_to have_key('automount')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts automount=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(automount: val)
+          synth.hcloud_volume_attachment("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'hcloud_volume_attachment', "bool_#{val}")
+          expect(config['automount']).to eq(val)
+        end
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer
@@ -100,5 +148,5 @@ RSpec.describe Pangea::Resources::HcloudVolumeAttachment do
     expected_outputs: [:id, :automount],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:automount]
 end

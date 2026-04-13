@@ -13,7 +13,8 @@ module Pangea::Resources
     define_resource :hcloud_zone_record,
       attributes_class: Hcloud::Types::ZoneRecordAttributes,
       outputs: { id: :id },
-      map: [:name, :type, :value, :zone]
+      map: [:name, :type, :value, :zone],
+      map_present: [:comment]
   end
   module Hcloud
     include HcloudZoneRecord

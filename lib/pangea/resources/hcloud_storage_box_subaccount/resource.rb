@@ -13,7 +13,8 @@ module Pangea::Resources
     define_resource :hcloud_storage_box_subaccount,
       attributes_class: Hcloud::Types::StorageBoxSubaccountAttributes,
       outputs: { id: :id },
-      map: [:home_directory, :password, :storage_box_id]
+      map: [:home_directory, :password, :storage_box_id],
+      map_present: [:access_settings, :description, :labels, :name]
   end
   module Hcloud
     include HcloudStorageBoxSubaccount

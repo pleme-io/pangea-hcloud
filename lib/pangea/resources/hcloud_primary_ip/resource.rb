@@ -14,7 +14,7 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::PrimaryIpAttributes,
       outputs: { id: :id },
       map: [:assignee_type, :type],
-      map_present: [:labels],
+      map_present: [:assignee_id, :datacenter, :labels, :location, :name],
       map_bool: [:auto_delete, :delete_protection]
   end
   module Hcloud

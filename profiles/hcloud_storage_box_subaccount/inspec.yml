@@ -1,0 +1,8 @@
+name: hcloud_storage_box_subaccount
+title: Manages a hcloud_storage_box_subaccount resource
+version: 0.1.0
+supports:
+  - platform: hcloud
+depends:
+  - name: inspec-hcloud
+    url: https://github.com/pleme-io/inspec-hcloud

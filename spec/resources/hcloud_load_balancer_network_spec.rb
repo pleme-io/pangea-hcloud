@@ -59,7 +59,7 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerNetwork do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ subnet_id: 'test-value' }) }
+      let(:all_attrs) { required_attrs.merge({ enable_public_interface: true, ip: 'test-value', network_id: 3.14, subnet_id: 'test-value' }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -68,11 +68,65 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerNetwork do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'full')
+        expect(config).to have_key('enable_public_interface')
+        expect(config).to have_key('ip')
+        expect(config).to have_key('network_id')
         expect(config).to have_key('subnet_id')
       end
     end
 
     context 'optional attributes' do
+      it 'includes enable_public_interface when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_network('opt', required_attrs.merge(enable_public_interface: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'opt')
+        expect(config).to have_key('enable_public_interface')
+      end
+
+      it 'omits enable_public_interface when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'minimal')
+        expect(config).not_to have_key('enable_public_interface')
+      end
+      it 'includes ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_network('opt', required_attrs.merge(ip: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'opt')
+        expect(config).to have_key('ip')
+      end
+
+      it 'omits ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'minimal')
+        expect(config).not_to have_key('ip')
+      end
+      it 'includes network_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_network('opt', required_attrs.merge(network_id: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'opt')
+        expect(config).to have_key('network_id')
+      end
+
+      it 'omits network_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_network('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'minimal')
+        expect(config).not_to have_key('network_id')
+      end
       it 'includes subnet_id when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -89,6 +143,20 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerNetwork do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_load_balancer_network', 'minimal')
         expect(config).not_to have_key('subnet_id')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts enable_public_interface=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(enable_public_interface: val)
+          synth.hcloud_load_balancer_network("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'hcloud_load_balancer_network', "bool_#{val}")
+          expect(config['enable_public_interface']).to eq(val)
+        end
       end
     end
 
@@ -137,5 +205,5 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerNetwork do
     expected_outputs: [:id, :enable_public_interface, :ip, :network_id],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:enable_public_interface]
 end

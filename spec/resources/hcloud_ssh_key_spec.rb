@@ -56,6 +56,40 @@ RSpec.describe Pangea::Resources::HcloudSshKey do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ labels: { 'key1' => 'val1' } }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_ssh_key('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'hcloud_ssh_key', 'full')
+        expect(config).to have_key('labels')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_ssh_key('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_ssh_key', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_ssh_key('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_ssh_key', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
+    end
+
     context 'attribute types' do
       it 'validates expected attribute types' do
         synth = create_synthesizer

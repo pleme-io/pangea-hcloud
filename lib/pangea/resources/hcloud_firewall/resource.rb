@@ -14,7 +14,7 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::FirewallAttributes,
       outputs: { id: :id },
       map: [:name],
-      map_present: [:apply_to, :rule]
+      map_present: [:apply_to, :labels, :rule]
   end
   module Hcloud
     include HcloudFirewall

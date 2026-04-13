@@ -14,7 +14,8 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::LoadBalancerTargetAttributes,
       outputs: { id: :id },
       map: [:load_balancer_id, :type],
-      map_present: [:ip, :label_selector, :server_id]
+      map_present: [:ip, :label_selector, :server_id],
+      map_bool: [:use_private_ip]
   end
   module Hcloud
     include HcloudLoadBalancerTarget

@@ -55,7 +55,7 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerTarget do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ip: 'test-value', label_selector: 'test-value', server_id: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ ip: 'test-value', label_selector: 'test-value', server_id: 3.14, use_private_ip: true }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -67,6 +67,7 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerTarget do
         expect(config).to have_key('ip')
         expect(config).to have_key('label_selector')
         expect(config).to have_key('server_id')
+        expect(config).to have_key('use_private_ip')
       end
     end
 
@@ -122,6 +123,37 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerTarget do
         config = validate_resource_structure(result, 'hcloud_load_balancer_target', 'minimal')
         expect(config).not_to have_key('server_id')
       end
+      it 'includes use_private_ip when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_target('opt', required_attrs.merge(use_private_ip: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_target', 'opt')
+        expect(config).to have_key('use_private_ip')
+      end
+
+      it 'omits use_private_ip when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_load_balancer_target('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_load_balancer_target', 'minimal')
+        expect(config).not_to have_key('use_private_ip')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts use_private_ip=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(use_private_ip: val)
+          synth.hcloud_load_balancer_target("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'hcloud_load_balancer_target', "bool_#{val}")
+          expect(config['use_private_ip']).to eq(val)
+        end
+      end
     end
 
     context 'attribute types' do
@@ -170,5 +202,5 @@ RSpec.describe Pangea::Resources::HcloudLoadBalancerTarget do
     expected_outputs: [:id, :use_private_ip],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:use_private_ip]
 end

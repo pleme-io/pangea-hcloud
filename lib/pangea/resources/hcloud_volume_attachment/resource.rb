@@ -13,7 +13,8 @@ module Pangea::Resources
     define_resource :hcloud_volume_attachment,
       attributes_class: Hcloud::Types::VolumeAttachmentAttributes,
       outputs: { id: :id },
-      map: [:server_id, :volume_id]
+      map: [:server_id, :volume_id],
+      map_bool: [:automount]
   end
   module Hcloud
     include HcloudVolumeAttachment

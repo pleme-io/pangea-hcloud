@@ -67,7 +67,7 @@ RSpec.describe Pangea::Resources::HcloudStorageBox do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ snapshot_plan: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ access_settings: { 'key1' => 'val1' }, delete_protection: true, labels: { 'key1' => 'val1' }, snapshot_plan: { 'key1' => 'val1' }, ssh_keys: ['test-value'] }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -76,11 +76,66 @@ RSpec.describe Pangea::Resources::HcloudStorageBox do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'hcloud_storage_box', 'full')
+        expect(config).to have_key('access_settings')
+        expect(config).to have_key('delete_protection')
+        expect(config).to have_key('labels')
         expect(config).to have_key('snapshot_plan')
+        expect(config).to have_key('ssh_keys')
       end
     end
 
     context 'optional attributes' do
+      it 'includes access_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('opt', required_attrs.merge(access_settings: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'opt')
+        expect(config).to have_key('access_settings')
+      end
+
+      it 'omits access_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'minimal')
+        expect(config).not_to have_key('access_settings')
+      end
+      it 'includes delete_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('opt', required_attrs.merge(delete_protection: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'opt')
+        expect(config).to have_key('delete_protection')
+      end
+
+      it 'omits delete_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'minimal')
+        expect(config).not_to have_key('delete_protection')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
       it 'includes snapshot_plan when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -98,12 +153,43 @@ RSpec.describe Pangea::Resources::HcloudStorageBox do
         config = validate_resource_structure(result, 'hcloud_storage_box', 'minimal')
         expect(config).not_to have_key('snapshot_plan')
       end
+      it 'includes ssh_keys when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('opt', required_attrs.merge(ssh_keys: ['test-value']))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'opt')
+        expect(config).to have_key('ssh_keys')
+      end
+
+      it 'omits ssh_keys when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box', 'minimal')
+        expect(config).not_to have_key('ssh_keys')
+      end
     end
 
     context 'sensitive fields' do
       it 'documents sensitive attributes' do
         sensitive_fields = [:password]
         expect(sensitive_fields).to include(:password)
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts delete_protection=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(delete_protection: val)
+          synth.hcloud_storage_box("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'hcloud_storage_box', "bool_#{val}")
+          expect(config['delete_protection']).to eq(val)
+        end
       end
     end
 
@@ -155,5 +241,5 @@ RSpec.describe Pangea::Resources::HcloudStorageBox do
     expected_outputs: [:id, :access_settings, :delete_protection, :labels, :server, :ssh_keys, :system, :username],
     sensitive_fields: [:password],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:delete_protection]
 end

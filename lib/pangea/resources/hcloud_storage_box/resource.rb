@@ -14,7 +14,8 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::StorageBoxAttributes,
       outputs: { id: :id },
       map: [:location, :name, :password, :storage_box_type],
-      map_present: [:snapshot_plan]
+      map_present: [:access_settings, :labels, :snapshot_plan, :ssh_keys],
+      map_bool: [:delete_protection]
   end
   module Hcloud
     include HcloudStorageBox

@@ -57,7 +57,7 @@ RSpec.describe Pangea::Resources::HcloudZoneRrset do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ ttl: 3.14 }) }
+      let(:all_attrs) { required_attrs.merge({ change_protection: true, labels: { 'key1' => 'val1' }, ttl: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -66,11 +66,47 @@ RSpec.describe Pangea::Resources::HcloudZoneRrset do
         result = normalize_synthesis(synth.synthesis)
 
         config = validate_resource_structure(result, 'hcloud_zone_rrset', 'full')
+        expect(config).to have_key('change_protection')
+        expect(config).to have_key('labels')
         expect(config).to have_key('ttl')
       end
     end
 
     context 'optional attributes' do
+      it 'includes change_protection when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone_rrset('opt', required_attrs.merge(change_protection: true))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone_rrset', 'opt')
+        expect(config).to have_key('change_protection')
+      end
+
+      it 'omits change_protection when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone_rrset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone_rrset', 'minimal')
+        expect(config).not_to have_key('change_protection')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone_rrset('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone_rrset', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_zone_rrset('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_zone_rrset', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
       it 'includes ttl when provided' do
         synth = create_synthesizer
         synth.extend(described_class)
@@ -87,6 +123,20 @@ RSpec.describe Pangea::Resources::HcloudZoneRrset do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_zone_rrset', 'minimal')
         expect(config).not_to have_key('ttl')
+      end
+    end
+
+    context 'boolean fields' do
+      [true, false].each do |val|
+        it "accepts change_protection=#{val}" do
+          synth = create_synthesizer
+          synth.extend(described_class)
+          attrs = required_attrs.merge(change_protection: val)
+          synth.hcloud_zone_rrset("bool_#{val}", attrs)
+          result = normalize_synthesis(synth.synthesis)
+          config = validate_resource_structure(result, 'hcloud_zone_rrset', "bool_#{val}")
+          expect(config['change_protection']).to eq(val)
+        end
       end
     end
 
@@ -138,5 +188,5 @@ RSpec.describe Pangea::Resources::HcloudZoneRrset do
     expected_outputs: [:id, :change_protection, :labels],
     sensitive_fields: [],
     immutable_fields: [],
-    boolean_fields: []
+    boolean_fields: [:change_protection]
 end

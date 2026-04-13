@@ -1,0 +1,8 @@
+name: hcloud_load_balancer_service
+title: Manages a hcloud_load_balancer_service resource
+version: 0.1.0
+supports:
+  - platform: hcloud
+depends:
+  - name: inspec-hcloud
+    url: https://github.com/pleme-io/inspec-hcloud

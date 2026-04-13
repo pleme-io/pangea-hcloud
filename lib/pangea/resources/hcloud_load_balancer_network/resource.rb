@@ -14,7 +14,8 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::LoadBalancerNetworkAttributes,
       outputs: { id: :id },
       map: [:load_balancer_id],
-      map_present: [:subnet_id]
+      map_present: [:ip, :network_id, :subnet_id],
+      map_bool: [:enable_public_interface]
   end
   module Hcloud
     include HcloudLoadBalancerNetwork

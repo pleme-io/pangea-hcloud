@@ -14,7 +14,7 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::VolumeAttributes,
       outputs: { id: :id },
       map: [:name, :size],
-      map_present: [:format, :labels],
+      map_present: [:format, :labels, :location, :server_id],
       map_bool: [:automount, :delete_protection]
   end
   module Hcloud

@@ -59,7 +59,7 @@ RSpec.describe Pangea::Resources::HcloudVolume do
     end
 
     context 'with all attributes' do
-      let(:all_attrs) { required_attrs.merge({ automount: true, delete_protection: true, format: 'test-value', labels: { 'key1' => 'val1' } }) }
+      let(:all_attrs) { required_attrs.merge({ automount: true, delete_protection: true, format: 'test-value', labels: { 'key1' => 'val1' }, location: 'test-value', server_id: 3.14 }) }
 
       it 'synthesizes with optional attributes' do
         synth = create_synthesizer
@@ -72,6 +72,8 @@ RSpec.describe Pangea::Resources::HcloudVolume do
         expect(config).to have_key('delete_protection')
         expect(config).to have_key('format')
         expect(config).to have_key('labels')
+        expect(config).to have_key('location')
+        expect(config).to have_key('server_id')
       end
     end
 
@@ -143,6 +145,40 @@ RSpec.describe Pangea::Resources::HcloudVolume do
         result = normalize_synthesis(synth.synthesis)
         config = validate_resource_structure(result, 'hcloud_volume', 'minimal')
         expect(config).not_to have_key('labels')
+      end
+      it 'includes location when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_volume('opt', required_attrs.merge(location: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_volume', 'opt')
+        expect(config).to have_key('location')
+      end
+
+      it 'omits location when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_volume', 'minimal')
+        expect(config).not_to have_key('location')
+      end
+      it 'includes server_id when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_volume('opt', required_attrs.merge(server_id: 3.14))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_volume', 'opt')
+        expect(config).to have_key('server_id')
+      end
+
+      it 'omits server_id when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_volume('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_volume', 'minimal')
+        expect(config).not_to have_key('server_id')
       end
     end
 

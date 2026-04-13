@@ -14,7 +14,7 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::LoadBalancerAttributes,
       outputs: { id: :id },
       map: [:load_balancer_type, :name],
-      map_present: [:algorithm, :target],
+      map_present: [:algorithm, :labels, :location, :network_zone, :target],
       map_bool: [:delete_protection]
   end
   module Hcloud

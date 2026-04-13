@@ -64,6 +64,94 @@ RSpec.describe Pangea::Resources::HcloudStorageBoxSubaccount do
       end
     end
 
+    context 'with all attributes' do
+      let(:all_attrs) { required_attrs.merge({ access_settings: { 'key1' => 'val1' }, description: 'test-value', labels: { 'key1' => 'val1' }, name: 'test-value' }) }
+
+      it 'synthesizes with optional attributes' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('full', all_attrs)
+        result = normalize_synthesis(synth.synthesis)
+
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'full')
+        expect(config).to have_key('access_settings')
+        expect(config).to have_key('description')
+        expect(config).to have_key('labels')
+        expect(config).to have_key('name')
+      end
+    end
+
+    context 'optional attributes' do
+      it 'includes access_settings when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('opt', required_attrs.merge(access_settings: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'opt')
+        expect(config).to have_key('access_settings')
+      end
+
+      it 'omits access_settings when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'minimal')
+        expect(config).not_to have_key('access_settings')
+      end
+      it 'includes description when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('opt', required_attrs.merge(description: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'opt')
+        expect(config).to have_key('description')
+      end
+
+      it 'omits description when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'minimal')
+        expect(config).not_to have_key('description')
+      end
+      it 'includes labels when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('opt', required_attrs.merge(labels: { 'key1' => 'val1' }))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'opt')
+        expect(config).to have_key('labels')
+      end
+
+      it 'omits labels when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'minimal')
+        expect(config).not_to have_key('labels')
+      end
+      it 'includes name when provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('opt', required_attrs.merge(name: 'test-value'))
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'opt')
+        expect(config).to have_key('name')
+      end
+
+      it 'omits name when not provided' do
+        synth = create_synthesizer
+        synth.extend(described_class)
+        synth.hcloud_storage_box_subaccount('minimal', required_attrs)
+        result = normalize_synthesis(synth.synthesis)
+        config = validate_resource_structure(result, 'hcloud_storage_box_subaccount', 'minimal')
+        expect(config).not_to have_key('name')
+      end
+    end
+
     context 'sensitive fields' do
       it 'documents sensitive attributes' do
         sensitive_fields = [:password]

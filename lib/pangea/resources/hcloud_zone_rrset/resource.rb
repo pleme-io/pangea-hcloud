@@ -14,7 +14,8 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::ZoneRrsetAttributes,
       outputs: { id: :id },
       map: [:name, :records, :type, :zone],
-      map_present: [:ttl]
+      map_present: [:labels, :ttl],
+      map_bool: [:change_protection]
   end
   module Hcloud
     include HcloudZoneRrset

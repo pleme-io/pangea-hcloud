@@ -14,7 +14,8 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::LoadBalancerServiceAttributes,
       outputs: { id: :id },
       map: [:load_balancer_id, :protocol],
-      map_present: [:health_check, :http]
+      map_present: [:destination_port, :health_check, :http, :listen_port],
+      map_bool: [:proxyprotocol]
   end
   module Hcloud
     include HcloudLoadBalancerService

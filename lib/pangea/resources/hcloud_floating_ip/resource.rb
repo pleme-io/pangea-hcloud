@@ -14,7 +14,7 @@ module Pangea::Resources
       attributes_class: Hcloud::Types::FloatingIpAttributes,
       outputs: { id: :id },
       map: [:type],
-      map_present: [:description, :labels],
+      map_present: [:description, :home_location, :labels, :name, :server_id],
       map_bool: [:delete_protection]
   end
   module Hcloud

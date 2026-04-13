@@ -1,0 +1,8 @@
+name: hcloud_zone_rrset
+title: Manages a hcloud_zone_rrset resource
+version: 0.1.0
+supports:
+  - platform: hcloud
+depends:
+  - name: inspec-hcloud
+    url: https://github.com/pleme-io/inspec-hcloud
